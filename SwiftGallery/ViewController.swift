@@ -18,7 +18,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
     fileprivate func setupLayout() {
         var layout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        layout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         layout.minimumInteritemSpacing = 5
         layout.itemSize = CGSize(width: (self.collectionView.frame.width)/4, height: (self.collectionView.frame.height)/6)
     }
@@ -40,6 +40,8 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
         cell.layer.borderColor = UIColor.lightGray.cgColor
         cell.layer.borderWidth = 0.5
+        cell.layer.cornerRadius = 15
+        cell.layer.masksToBounds = true
         cell.image.loadImageUsingUrlString(urlString: self.images[indexPath.item])
 
         return cell
@@ -55,12 +57,20 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         request.setValue("Client-ID \(clientId)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
 
+        let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        self.view.addSubview(activityIndicatorView)
+        activityIndicatorView.frame = self.view.frame
+        activityIndicatorView.center = self.view.center
+        activityIndicatorView.color = UIColor.black
+        activityIndicatorView.startAnimating()
+
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if error != nil {
                 let alertController = UIAlertController(title: "SwiftGallery", message: error?.localizedDescription ?? "Error loading images.", preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: "Dismiss", style: .default))
                 self.present(alertController, animated: true, completion: nil)
                 print(error?.localizedDescription ?? "Response error")
+                activityIndicatorView.stopAnimating()
                 return
             }
 
@@ -82,9 +92,11 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
                 print(self.images)
                 print(self.images.count)
                 DispatchQueue.main.async {
+                    activityIndicatorView.stopAnimating()
                     self.collectionView?.reloadData()
                 }
             } catch let parsingError {
+                activityIndicatorView.stopAnimating()
                 print("Error", parsingError)
             }
         }
