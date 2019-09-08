@@ -18,9 +18,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
     fileprivate func setupLayout() {
         var layout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         layout.minimumInteritemSpacing = 5
-        layout.itemSize = CGSize(width: (self.collectionView.frame.width - 10)/4, height: (self.collectionView.frame.height - 10)/5)
+        layout.itemSize = CGSize(width: (self.collectionView.frame.width)/4, height: (self.collectionView.frame.height)/6)
     }
 
     override func viewDidLoad() {
@@ -57,6 +57,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if error != nil {
+                let alertController = UIAlertController(title: "SwiftGallery", message: error?.localizedDescription ?? "Error loading images.", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Dismiss", style: .default))
+                self.present(alertController, animated: true, completion: nil)
                 print(error?.localizedDescription ?? "Response error")
                 return
             }
