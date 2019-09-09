@@ -17,10 +17,16 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     var images = Array<String>()
 
     fileprivate func setupLayout() {
-        var layout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        layout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        layout.minimumInteritemSpacing = 5
-        layout.itemSize = CGSize(width: (self.collectionView.frame.width)/4, height: (self.collectionView.frame.height)/6)
+        let estimatedItemWidth = CGFloat(200)
+        let cellMargin = CGFloat(10)
+        let cellCount = floor(CGFloat(self.collectionView.frame.width) / estimatedItemWidth)
+        let margin = CGFloat(cellMargin * 2)
+        let calculatedWidth = (self.collectionView.frame.width - CGFloat(cellMargin) * (cellCount - 1) - margin) / cellCount
+
+        let layout = self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        layout.sectionInset = UIEdgeInsets(top: cellMargin, left: cellMargin, bottom: cellMargin, right: cellMargin)
+        layout.minimumInteritemSpacing = cellMargin
+        layout.itemSize = CGSize(width: calculatedWidth, height: calculatedWidth)
     }
 
     override func viewDidLoad() {
@@ -28,7 +34,13 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
         setupLayout()
         fetchImagesByName(name: "cats")
+    }
 
+    override func viewDidLayoutSubviews() {
+        setupLayout()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -40,9 +52,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
         cell.layer.borderColor = UIColor.lightGray.cgColor
         cell.layer.borderWidth = 0.5
-        cell.layer.cornerRadius = 15
+        cell.layer.cornerRadius = 10
         cell.layer.masksToBounds = true
-        cell.image.loadImageUsingUrlString(urlString: self.images[indexPath.item])
+        cell.image.loadFromUrlString(urlString: self.images[indexPath.item], activityIndicator: cell.activityIndicator)
 
         return cell
     }

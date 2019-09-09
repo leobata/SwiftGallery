@@ -10,5 +10,6 @@ import UIKit
 
 class CollectionViewCell: UICollectionViewCell {
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var image: CustomImageView!
 }

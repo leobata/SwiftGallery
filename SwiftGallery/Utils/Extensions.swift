@@ -14,13 +14,15 @@ let imageCache = NSCache<AnyObject, AnyObject>()
 class CustomImageView: UIImageView {
     var imageUrlString: String?
 
-    func loadImageUsingUrlString(urlString: String) {
+    func loadFromUrlString(urlString: String, activityIndicator: UIActivityIndicatorView?) {
         imageUrlString = urlString
 
         let url = URL(string: urlString)
-        self.image = UIImage(named: "loading")
+        self.image = nil
+        activityIndicator?.startAnimating()
 
         if let imageFromCache = imageCache.object(forKey: urlString as AnyObject) as? UIImage {
+            activityIndicator?.stopAnimating()
             self.image = imageFromCache
             return
         }
@@ -36,10 +38,10 @@ class CustomImageView: UIImageView {
                 let imageToCache = UIImage(data: data!)
 
                 if self.imageUrlString == urlString {
+                    activityIndicator?.stopAnimating()
                     self.image = imageToCache
                 }
                 imageCache.setObject(imageToCache!, forKey: urlString as AnyObject)
-
             }
         }.resume()
     }
