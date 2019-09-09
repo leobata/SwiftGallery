@@ -14,8 +14,10 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
 
     @IBOutlet weak var collectionView: UICollectionView!
 
+    // Image array to hold the retrieved images URL
     var images = Array<String>()
 
+    // Function to setup Collection View layout and items size
     fileprivate func setupLayout() {
         let estimatedItemWidth = CGFloat(200)
         let cellMargin = CGFloat(10)
@@ -63,6 +65,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         print(indexPath.item)
     }
 
+    // Download image list from IMGUR, for the given "name"
     func fetchImagesByName(name: String) -> Void {
         let url = URL(string: "https://api.imgur.com/3/gallery/search/?q=\(name)")
         var request = URLRequest(url: url!)
